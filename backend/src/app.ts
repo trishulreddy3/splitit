@@ -8,7 +8,7 @@ const app = express();
 
 app.use(helmet());
 app.use(cors({
-  origin: [process.env.CLIENT_URL || "http://localhost:5173", "http://localhost:8081"],
+  origin: [process.env.CLIENT_URL || "http://localhost:5173", "http://localhost:8081", "https://fareplay.netlify.app"],
   credentials: true
 }));
 app.use(morgan("dev"));
