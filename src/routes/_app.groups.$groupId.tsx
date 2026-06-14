@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
-  ArrowLeft, Calendar, Loader2, MapPin, Plus, Receipt, Trash2, UserMinus, Users,
+  ArrowLeft, Calendar, Loader2, MapPin, Plus, Receipt, Trash2, UserMinus, Users, Check, X
 } from "lucide-react";
 import { toast } from "sonner";
 import { expenseService, groupService, settlementService } from "@/lib/api/services";
@@ -13,6 +13,8 @@ import { ExpenseFormSheet } from "@/components/expense-form-sheet";
 import { useAuth } from "@/lib/auth-context";
 import { formatCurrency } from "@/lib/settle";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
@@ -33,6 +35,16 @@ function GroupDetailPage() {
   const group = useQuery({ queryKey: ["group", groupId], queryFn: () => groupService.get(groupId) });
   const expenses = useQuery({ queryKey: ["expenses", { groupId }], queryFn: () => expenseService.list({ groupId }) });
   const settlements = useQuery({ queryKey: ["settlements", { groupId }], queryFn: () => settlementService.forGroup(groupId) });
+  
+  const g = group.data;
+  const isOwner = user?._id === g?.owner?._id || user?._id === g?.owner;
+
+  // We only fetch pending group invites if the current user is the owner
+  const invitesQuery = useQuery({ 
+    queryKey: ["groupInvites", groupId], 
+    queryFn: () => groupService.groupInvites(groupId),
+    enabled: !!isOwner,
+  });
 
   const invite = useMutation({
     mutationFn: () => groupService.invite(groupId, [inviteEmail]),
@@ -40,6 +52,7 @@ function GroupDetailPage() {
       toast.success("Invitation sent");
       setInviteEmail(""); setInviteOpen(false);
       qc.invalidateQueries({ queryKey: ["group", groupId] });
+      qc.invalidateQueries({ queryKey: ["groupInvites", groupId] });
     },
     onError: (e: any) => toast.error(e.message),
   });
@@ -58,13 +71,30 @@ function GroupDetailPage() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["settlements"] }); toast.success("Marked as paid"); },
     onError: (e: any) => toast.error(e.message),
   });
+  const updateGroup = useMutation({
+    mutationFn: (data: Partial<typeof g>) => groupService.update(groupId, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["group", groupId] });
+      toast.success("Settings updated");
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+  
+  const revokeInvite = useMutation({
+    // Optional feature for the owner to reject/cancel a pending invite
+    mutationFn: (id: string) => groupService.rejectInvite(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["groupInvites", groupId] });
+      toast.success("Invite revoked");
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
 
   if (group.isLoading) return <PageContainer><Skeleton className="h-40" /></PageContainer>;
   if (group.isError || !group.data) return (
     <PageContainer><EmptyState icon={Users} title="Group not found" description={group.error?.message} action={<Button asChild><Link to="/groups">Back to groups</Link></Button>} /></PageContainer>
   );
 
-  const g = group.data;
   const totalSpend = (expenses.data || []).reduce((a, e) => a + e.amount, 0);
   const currency = expenses.data?.[0]?.currency || "INR";
 
@@ -99,7 +129,7 @@ function GroupDetailPage() {
             <TabsTrigger value="expenses">Expenses</TabsTrigger>
             <TabsTrigger value="settlements">Settlements</TabsTrigger>
             <TabsTrigger value="members">Members</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
+            {isOwner && <TabsTrigger value="settings">Settings</TabsTrigger>}
           </TabsList>
 
           <TabsContent value="expenses" className="mt-4">
@@ -115,7 +145,11 @@ function GroupDetailPage() {
                         <div className="grid h-8 w-8 shrink-0 place-items-center rounded-md border border-border bg-muted text-[10px] font-medium uppercase">{e.name[0]}</div>
                         <div className="min-w-0 flex-1">
                           <div className="truncate text-sm font-medium">{e.name}</div>
-                          <div className="truncate text-xs text-muted-foreground">{e.paidBy?.fullName} paid · {new Date(e.expenseDate).toLocaleDateString()}</div>
+                          <div className="truncate text-xs text-muted-foreground">
+                            {e.contributors?.length === 1 
+                              ? `${typeof e.contributors[0].user === "object" ? (e.contributors[0].user as any).fullName : "Someone"} paid`
+                              : `${e.contributors?.length || 0} people paid`} · {new Date(e.expenseDate).toLocaleDateString()}
+                          </div>
                         </div>
                         <StatusBadge>{e.category}</StatusBadge>
                         <div className="w-24 text-right text-sm font-medium tabular-nums">{formatCurrency(e.amount, e.currency)}</div>
@@ -152,49 +186,104 @@ function GroupDetailPage() {
           </TabsContent>
 
           <TabsContent value="members" className="mt-4 space-y-4">
-            <div className="flex justify-end">
-              <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
-                <DialogTrigger asChild><Button size="sm" variant="outline"><Plus className="mr-1.5 h-3.5 w-3.5" />Invite</Button></DialogTrigger>
-                <DialogContent>
-                  <DialogHeader><DialogTitle>Invite by email</DialogTitle><DialogDescription>They'll receive a link to join this group.</DialogDescription></DialogHeader>
-                  <Input value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="friend@example.com" />
-                  <DialogFooter>
-                    <Button onClick={() => invite.mutate()} disabled={!inviteEmail || invite.isPending}>
-                      {invite.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Send invite
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </div>
-            <div className="overflow-hidden rounded-lg border border-border bg-card">
-              <ul className="divide-y divide-border">
-                {g.members?.map((m) => (
-                  <li key={m._id} className="flex items-center gap-3 px-4 py-3">
-                    <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-muted text-[10px] font-medium uppercase">{m.fullName?.[0]}</div>
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate text-sm font-medium">{m.fullName} {m._id === g.owner?._id && <span className="ml-1 text-[10px] uppercase text-muted-foreground">owner</span>}</div>
-                      <div className="truncate text-xs text-muted-foreground">{m.email}</div>
-                    </div>
-                    {m._id !== g.owner?._id && user?._id === g.owner?._id && (
-                      <button onClick={() => removeMember.mutate(m._id)} className="text-muted-foreground hover:text-destructive" aria-label="Remove member">
-                        <UserMinus className="h-4 w-4" />
-                      </button>
+            <Tabs defaultValue="members-list" className="w-full">
+              {isOwner && (
+                <TabsList className="mb-4">
+                  <TabsTrigger value="members-list">Members</TabsTrigger>
+                  <TabsTrigger value="pending-invites">Pending Invites</TabsTrigger>
+                </TabsList>
+              )}
+              
+              <TabsContent value="members-list" className="space-y-4 mt-0">
+                {(isOwner || g.membersCanInvite) && (
+                  <div className="flex justify-end">
+                    <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
+                      <DialogTrigger asChild><Button size="sm" variant="outline"><Plus className="mr-1.5 h-3.5 w-3.5" />Invite</Button></DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader><DialogTitle>Invite by email</DialogTitle><DialogDescription>They'll receive a link to join this group.</DialogDescription></DialogHeader>
+                        <Input value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="friend@example.com" />
+                        <DialogFooter>
+                          <Button onClick={() => invite.mutate()} disabled={!inviteEmail || invite.isPending}>
+                            {invite.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Send invite
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                )}
+                <div className="overflow-hidden rounded-lg border border-border bg-card">
+                  <ul className="divide-y divide-border">
+                    {g.members?.map((m) => (
+                      <li key={m._id} className="flex items-center gap-3 px-4 py-3">
+                        <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-muted text-[10px] font-medium uppercase">{m.fullName?.[0]}</div>
+                        <div className="min-w-0 flex-1">
+                          <div className="truncate text-sm font-medium">{m.fullName} {m._id === g.owner?._id && <span className="ml-1 text-[10px] uppercase text-muted-foreground">owner</span>}</div>
+                          <div className="truncate text-xs text-muted-foreground">{m.email}</div>
+                        </div>
+                        {m._id !== g.owner?._id && isOwner && (
+                          <button onClick={() => removeMember.mutate(m._id)} className="text-muted-foreground hover:text-destructive" aria-label="Remove member">
+                            <UserMinus className="h-4 w-4" />
+                          </button>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </TabsContent>
+
+              {isOwner && (
+                <TabsContent value="pending-invites" className="mt-0">
+                  <div className="overflow-hidden rounded-lg border border-border bg-card">
+                    {!invitesQuery.data?.length ? (
+                      <EmptyState className="border-0" icon={Users} title="No pending invites" description="There are no pending invitations for this group." />
+                    ) : (
+                      <ul className="divide-y divide-border">
+                        {invitesQuery.data.map((inv) => (
+                          <li key={inv._id} className="flex items-center gap-3 px-4 py-3">
+                            <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-muted text-[10px] font-medium uppercase">{inv.to.name?.[0] || inv.to.email?.[0] || "?"}</div>
+                            <div className="min-w-0 flex-1">
+                              <div className="truncate text-sm font-medium">{inv.to.name || inv.to.email} <span className="ml-1 text-[10px] uppercase text-muted-foreground">invited</span></div>
+                              <div className="truncate text-xs text-muted-foreground">by {inv.from.name || inv.from.email}</div>
+                            </div>
+                            <Button size="sm" variant="outline" className="h-8 text-destructive hover:bg-destructive/10 hover:text-destructive opacity-80 hover:opacity-100" onClick={() => revokeInvite.mutate(inv._id)} disabled={revokeInvite.isPending}>
+                              <X className="mr-1 h-3 w-3" /> Revoke
+                            </Button>
+                          </li>
+                        ))}
+                      </ul>
                     )}
-                  </li>
-                ))}
-              </ul>
-            </div>
+                  </div>
+                </TabsContent>
+              )}
+            </Tabs>
           </TabsContent>
 
-          <TabsContent value="settings" className="mt-4">
-            <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-5">
-              <h3 className="text-sm font-medium">Danger zone</h3>
-              <p className="mt-1 text-xs text-muted-foreground">Deleting a group removes all expenses and settlement history. This can't be undone.</p>
-              <Button variant="destructive" size="sm" className="mt-4" onClick={() => { if (confirm(`Delete "${g.name}"? This is permanent.`)) deleteGroup.mutate(); }}>
-                <Trash2 className="mr-1.5 h-3.5 w-3.5" />Delete group
-              </Button>
-            </div>
-          </TabsContent>
+          {isOwner && (
+            <TabsContent value="settings" className="mt-4 space-y-6">
+              <div className="rounded-lg border border-border bg-card p-5">
+                <h3 className="text-sm font-medium">Group permissions</h3>
+                <div className="mt-4 flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label className="text-base">Allow members to invite</Label>
+                    <p className="text-xs text-muted-foreground">If turned on, any member can invite other people to the group.</p>
+                  </div>
+                  <Switch 
+                    checked={!!g.membersCanInvite} 
+                    onCheckedChange={(checked) => updateGroup.mutate({ membersCanInvite: checked })} 
+                    disabled={updateGroup.isPending}
+                  />
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-5">
+                <h3 className="text-sm font-medium">Danger zone</h3>
+                <p className="mt-1 text-xs text-muted-foreground">Deleting a group removes all expenses and settlement history. This can't be undone.</p>
+                <Button variant="destructive" size="sm" className="mt-4" onClick={() => { if (confirm(`Delete "${g.name}"? This is permanent.`)) deleteGroup.mutate(); }}>
+                  <Trash2 className="mr-1.5 h-3.5 w-3.5" />Delete group
+                </Button>
+              </div>
+            </TabsContent>
+          )}
         </Tabs>
       </PageContainer>
 

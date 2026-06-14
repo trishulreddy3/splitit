@@ -13,7 +13,7 @@ export interface IExpense extends Document {
   amount: number;
   currency: string;
   category: string;
-  paidBy: Types.ObjectId;
+  contributors: { user: Types.ObjectId; amount: number }[];
   group?: Types.ObjectId;
   participants: Types.ObjectId[];
   splits: IExpenseSplit[];
@@ -31,7 +31,12 @@ const ExpenseSchema: Schema = new Schema(
     amount: { type: Number, required: true },
     currency: { type: String, default: "INR" },
     category: { type: String, required: true },
-    paidBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    contributors: [
+      {
+        user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+        amount: { type: Number, required: true },
+      },
+    ],
     group: { type: Schema.Types.ObjectId, ref: "Group" },
     participants: [{ type: Schema.Types.ObjectId, ref: "User" }],
     splits: [

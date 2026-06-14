@@ -30,8 +30,8 @@ function DashboardPage() {
         description="Here's a snapshot of your shared spending."
         actions={
           <>
-            <Button variant="outline" size="sm" asChild><Link to="/groups">New group</Link></Button>
-            <Button size="sm" asChild><Link to="/expenses"><Plus className="mr-1.5 h-3.5 w-3.5" /> Add expense</Link></Button>
+            <Button variant="outline" size="sm" asChild><Link to="/groups" search={{ new: true }}>New group</Link></Button>
+            <Button size="sm" asChild><Link to="/expenses" search={{ new: true }}><Plus className="mr-1.5 h-3.5 w-3.5" /> Add expense</Link></Button>
           </>
         }
       />
@@ -81,7 +81,7 @@ function DashboardPage() {
                   icon={CalendarClock}
                   title="No activity yet"
                   description="Create a group and start adding expenses to see updates here."
-                  action={<Button size="sm" asChild><Link to="/groups">Create group</Link></Button>}
+                  action={<Button size="sm" asChild><Link to="/groups" search={{ new: true }}>Create group</Link></Button>}
                 />
               ) : (
                 <ul className="divide-y divide-border">
@@ -123,8 +123,8 @@ function DashboardPage() {
               </div>
               <p className="mt-3 text-sm">Track a one-off split or scan a receipt to skip manual entry.</p>
               <div className="mt-4 flex gap-2">
-                <Button size="sm" asChild className="flex-1"><Link to="/expenses">Add expense</Link></Button>
-                <Button size="sm" variant="outline" asChild className="flex-1"><Link to="/groups">New group</Link></Button>
+                <Button size="sm" asChild className="flex-1"><Link to="/expenses" search={{ new: true }}>Add expense</Link></Button>
+                <Button size="sm" variant="outline" asChild className="flex-1"><Link to="/groups" search={{ new: true }}>New group</Link></Button>
               </div>
             </div>
           </div>

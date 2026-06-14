@@ -13,14 +13,18 @@ import { formatCurrency } from "@/lib/settle";
 import { friendService } from "@/lib/api/services";
 
 export const Route = createFileRoute("/_app/expenses")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    new: search.new === "true" || search.new === true,
+  }),
   ssr: false,
   component: ExpensesPage,
 });
 
 function ExpensesPage() {
+  const search = Route.useSearch();
   const { user } = useAuth();
   const [q, setQ] = useState("");
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(search.new || false);
   const qc = useQueryClient();
 
   const expenses = useQuery({ queryKey: ["expenses"], queryFn: () => expenseService.list() });

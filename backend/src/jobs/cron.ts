@@ -23,7 +23,7 @@ export const startCronJobs = () => {
           amount: req.amount,
           currency: req.currency,
           category: req.category,
-          paidBy: req.paidBy,
+          contributors: req.contributors,
           group: req.group,
           participants: req.participants,
           splits: req.splits,

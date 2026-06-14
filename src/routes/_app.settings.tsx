@@ -5,11 +5,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { settingsService, reportService } from "@/lib/api/services";
+import { settingsService, reportService, reviewService } from "@/lib/api/services";
 import { PageContainer, PageHeader } from "@/components/primitives";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -49,6 +50,12 @@ function SettingsPage() {
   const deleteAcct = useMutation({
     mutationFn: () => settingsService.deleteAccount(),
     onSuccess: () => { toast.success("Account deleted"); logout(); },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const submitReview = useMutation({
+    mutationFn: (payload: { text: string; role: string; rating: number }) => reviewService.create(payload),
+    onSuccess: () => toast.success("Review submitted!"),
     onError: (e: any) => toast.error(e.message),
   });
 
@@ -107,6 +114,36 @@ function SettingsPage() {
               <Button size="sm" variant="outline" onClick={() => downloadReport("pdf")}>Download PDF</Button>
               <Button size="sm" variant="outline" onClick={() => downloadReport("csv")}>Download CSV</Button>
             </div>
+          </section>
+
+          <section className="rounded-lg border border-border bg-card p-6">
+            <h3 className="text-sm font-medium">Platform Feedback</h3>
+            <p className="mt-1 text-xs text-muted-foreground">Submit a review to be featured on the login screen.</p>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const fd = new FormData(e.currentTarget);
+              submitReview.mutate({
+                text: fd.get("text") as string,
+                role: fd.get("role") as string,
+                rating: 5
+              });
+              e.currentTarget.reset();
+            }} className="mt-5 space-y-4">
+              <div className="space-y-2">
+                <Label>Your Role / Title</Label>
+                <Input name="role" placeholder="e.g. Travel Lead, Wanderloop" required />
+              </div>
+              <div className="space-y-2">
+                <Label>Review</Label>
+                <Textarea name="text" placeholder="We used to spend an hour..." required />
+              </div>
+              <div className="flex justify-end">
+                <Button type="submit" size="sm" disabled={submitReview.isPending}>
+                  {submitReview.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Submit review
+                </Button>
+              </div>
+            </form>
           </section>
 
           <section className="rounded-lg border border-border bg-card p-6">

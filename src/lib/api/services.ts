@@ -1,7 +1,7 @@
 import { api } from "./client";
 import type {
   Activity, DashboardSummary, Expense, Friend, FriendRequest,
-  Group, Notification, Settlement, User,
+  Group, GroupInvite, Notification, Settlement, User,
 } from "@/types";
 
 const unwrap = <T,>(p: Promise<{ data: T | { data: T } }>): Promise<T> =>
@@ -51,6 +51,11 @@ export const groupService = {
   transferOwner: (id: string, memberId: string) =>
     unwrap<void>(api.post(`/groups/${id}/transfer-owner`, { memberId })),
   summary: (id: string) => unwrap<any>(api.get(`/groups/${id}/summary`)),
+  pendingInvites: () => unwrap<GroupInvite[]>(api.get("/groups/invites/pending")),
+  sentInvites: () => unwrap<GroupInvite[]>(api.get("/groups/invites/sent")),
+  groupInvites: (id: string) => unwrap<GroupInvite[]>(api.get(`/groups/${id}/invites`)),
+  acceptInvite: (inviteId: string) => unwrap<void>(api.post(`/groups/invites/${inviteId}/accept`)),
+  rejectInvite: (inviteId: string) => unwrap<void>(api.post(`/groups/invites/${inviteId}/reject`)),
 };
 
 // Expenses
@@ -126,5 +131,15 @@ export const searchService = {
   global: (q: string) =>
     unwrap<{ groups: Group[]; expenses: Expense[]; friends: Friend[] }>(
       api.get("/search", { params: { q } }),
+    ),
+};
+
+// Reviews
+export const reviewService = {
+  create: (payload: { text: string; rating?: number; role?: string }) =>
+    unwrap<any>(api.post("/reviews", payload)),
+  getRandom: () =>
+    unwrap<{ text: string; rating: number; role: string; authorName: string; authorAvatar?: string } | null>(
+      api.get("/reviews/random")
     ),
 };

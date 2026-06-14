@@ -12,6 +12,7 @@ import settingsRoutes from "./settings.routes";
 import accountRoutes from "./account.routes";
 import reportRoutes from "./report.routes";
 import searchRoutes from "./search.routes";
+import reviewRoutes from "./review.routes";
 
 const router = express.Router();
 
@@ -28,5 +29,6 @@ router.use("/settings", settingsRoutes);
 router.use("/account", accountRoutes);
 router.use("/reports", reportRoutes);
 router.use("/search", searchRoutes);
+router.use("/reviews", reviewRoutes);
 
 export default router;

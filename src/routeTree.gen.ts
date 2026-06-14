@@ -18,11 +18,11 @@ import { Route as AppSettlementsRouteImport } from './routes/_app.settlements'
 import { Route as AppSettingsRouteImport } from './routes/_app.settings'
 import { Route as AppProfileRouteImport } from './routes/_app.profile'
 import { Route as AppNotificationsRouteImport } from './routes/_app.notifications'
-import { Route as AppGroupsRouteImport } from './routes/_app.groups'
 import { Route as AppFriendsRouteImport } from './routes/_app.friends'
 import { Route as AppExpensesRouteImport } from './routes/_app.expenses'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppActivityRouteImport } from './routes/_app.activity'
+import { Route as AppGroupsIndexRouteImport } from './routes/_app.groups.index'
 import { Route as AppGroupsGroupIdRouteImport } from './routes/_app.groups.$groupId'
 
 const AuthRoute = AuthRouteImport.update({
@@ -68,11 +68,6 @@ const AppNotificationsRoute = AppNotificationsRouteImport.update({
   path: '/notifications',
   getParentRoute: () => AppRoute,
 } as any)
-const AppGroupsRoute = AppGroupsRouteImport.update({
-  id: '/groups',
-  path: '/groups',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppFriendsRoute = AppFriendsRouteImport.update({
   id: '/friends',
   path: '/friends',
@@ -93,10 +88,15 @@ const AppActivityRoute = AppActivityRouteImport.update({
   path: '/activity',
   getParentRoute: () => AppRoute,
 } as any)
+const AppGroupsIndexRoute = AppGroupsIndexRouteImport.update({
+  id: '/groups/',
+  path: '/groups/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppGroupsGroupIdRoute = AppGroupsGroupIdRouteImport.update({
-  id: '/$groupId',
-  path: '/$groupId',
-  getParentRoute: () => AppGroupsRoute,
+  id: '/groups/$groupId',
+  path: '/groups/$groupId',
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -105,7 +105,6 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AppDashboardRoute
   '/expenses': typeof AppExpensesRoute
   '/friends': typeof AppFriendsRoute
-  '/groups': typeof AppGroupsRouteWithChildren
   '/notifications': typeof AppNotificationsRoute
   '/profile': typeof AppProfileRoute
   '/settings': typeof AppSettingsRoute
@@ -113,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
   '/groups/$groupId': typeof AppGroupsGroupIdRoute
+  '/groups/': typeof AppGroupsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -120,7 +120,6 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AppDashboardRoute
   '/expenses': typeof AppExpensesRoute
   '/friends': typeof AppFriendsRoute
-  '/groups': typeof AppGroupsRouteWithChildren
   '/notifications': typeof AppNotificationsRoute
   '/profile': typeof AppProfileRoute
   '/settings': typeof AppSettingsRoute
@@ -128,6 +127,7 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
   '/groups/$groupId': typeof AppGroupsGroupIdRoute
+  '/groups': typeof AppGroupsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -138,7 +138,6 @@ export interface FileRoutesById {
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/expenses': typeof AppExpensesRoute
   '/_app/friends': typeof AppFriendsRoute
-  '/_app/groups': typeof AppGroupsRouteWithChildren
   '/_app/notifications': typeof AppNotificationsRoute
   '/_app/profile': typeof AppProfileRoute
   '/_app/settings': typeof AppSettingsRoute
@@ -146,6 +145,7 @@ export interface FileRoutesById {
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/signup': typeof AuthSignupRoute
   '/_app/groups/$groupId': typeof AppGroupsGroupIdRoute
+  '/_app/groups/': typeof AppGroupsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -155,7 +155,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/expenses'
     | '/friends'
-    | '/groups'
     | '/notifications'
     | '/profile'
     | '/settings'
@@ -163,6 +162,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/groups/$groupId'
+    | '/groups/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -170,7 +170,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/expenses'
     | '/friends'
-    | '/groups'
     | '/notifications'
     | '/profile'
     | '/settings'
@@ -178,6 +177,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/groups/$groupId'
+    | '/groups'
   id:
     | '__root__'
     | '/'
@@ -187,7 +187,6 @@ export interface FileRouteTypes {
     | '/_app/dashboard'
     | '/_app/expenses'
     | '/_app/friends'
-    | '/_app/groups'
     | '/_app/notifications'
     | '/_app/profile'
     | '/_app/settings'
@@ -195,6 +194,7 @@ export interface FileRouteTypes {
     | '/_auth/login'
     | '/_auth/signup'
     | '/_app/groups/$groupId'
+    | '/_app/groups/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -268,13 +268,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppNotificationsRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/groups': {
-      id: '/_app/groups'
-      path: '/groups'
-      fullPath: '/groups'
-      preLoaderRoute: typeof AppGroupsRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/friends': {
       id: '/_app/friends'
       path: '/friends'
@@ -303,38 +296,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppActivityRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/groups/': {
+      id: '/_app/groups/'
+      path: '/groups'
+      fullPath: '/groups/'
+      preLoaderRoute: typeof AppGroupsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/groups/$groupId': {
       id: '/_app/groups/$groupId'
-      path: '/$groupId'
+      path: '/groups/$groupId'
       fullPath: '/groups/$groupId'
       preLoaderRoute: typeof AppGroupsGroupIdRouteImport
-      parentRoute: typeof AppGroupsRoute
+      parentRoute: typeof AppRoute
     }
   }
 }
-
-interface AppGroupsRouteChildren {
-  AppGroupsGroupIdRoute: typeof AppGroupsGroupIdRoute
-}
-
-const AppGroupsRouteChildren: AppGroupsRouteChildren = {
-  AppGroupsGroupIdRoute: AppGroupsGroupIdRoute,
-}
-
-const AppGroupsRouteWithChildren = AppGroupsRoute._addFileChildren(
-  AppGroupsRouteChildren,
-)
 
 interface AppRouteChildren {
   AppActivityRoute: typeof AppActivityRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppExpensesRoute: typeof AppExpensesRoute
   AppFriendsRoute: typeof AppFriendsRoute
-  AppGroupsRoute: typeof AppGroupsRouteWithChildren
   AppNotificationsRoute: typeof AppNotificationsRoute
   AppProfileRoute: typeof AppProfileRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppSettlementsRoute: typeof AppSettlementsRoute
+  AppGroupsGroupIdRoute: typeof AppGroupsGroupIdRoute
+  AppGroupsIndexRoute: typeof AppGroupsIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -342,11 +331,12 @@ const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
   AppExpensesRoute: AppExpensesRoute,
   AppFriendsRoute: AppFriendsRoute,
-  AppGroupsRoute: AppGroupsRouteWithChildren,
   AppNotificationsRoute: AppNotificationsRoute,
   AppProfileRoute: AppProfileRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppSettlementsRoute: AppSettlementsRoute,
+  AppGroupsGroupIdRoute: AppGroupsGroupIdRoute,
+  AppGroupsIndexRoute: AppGroupsIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

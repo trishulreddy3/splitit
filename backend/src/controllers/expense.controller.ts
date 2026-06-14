@@ -12,13 +12,13 @@ export const getExpenses = async (req: AuthRequest, res: Response) => {
     query.group = groupId;
   }
 
-  const expenses = await Expense.find(query).populate("paidBy participants group");
+  const expenses = await Expense.find(query).populate("contributors.user participants group");
   res.json({ success: true, data: expenses });
 };
 
 export const getExpenseById = async (req: AuthRequest, res: Response): Promise<void> => {
   const { id } = req.params;
-  const expense = await Expense.findById(id).populate("paidBy participants splits.user");
+  const expense = await Expense.findById(id).populate("contributors.user participants splits.user");
 
   if (!expense || !expense.participants.some(p => p._id.toString() === req.user!._id.toString())) {
     res.status(404).json({ success: false, message: "Expense not found" });
@@ -30,14 +30,14 @@ export const getExpenseById = async (req: AuthRequest, res: Response): Promise<v
 
 export const createExpense = async (req: AuthRequest, res: Response): Promise<void> => {
   const userId = req.user!._id;
-  const { name, amount, currency, category, paidBy, group, participants, splits, splitMethod } = req.body;
+  const { name, amount, currency, category, contributors, group, participants, splits, splitMethod } = req.body;
 
   const expense = await Expense.create({
     name,
     amount,
     currency: currency || "INR",
     category: category || "miscellaneous",
-    paidBy: paidBy || userId,
+    contributors: contributors || [{ user: userId, amount: amount }],
     group,
     participants,
     splits,

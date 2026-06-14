@@ -19,8 +19,12 @@ export const calculateGroupSettlements = async (groupId: string) => {
 
   // Initialize balances based on expenses
   for (const exp of expenses) {
-    const paidBy = exp.paidBy.toString();
-    balances[paidBy] = (balances[paidBy] || 0) + exp.amount;
+    if (exp.contributors && exp.contributors.length > 0) {
+      for (const contributor of exp.contributors) {
+        const cUser = contributor.user.toString();
+        balances[cUser] = (balances[cUser] || 0) + contributor.amount;
+      }
+    }
 
     for (const split of exp.splits) {
       const splitUser = split.user.toString();

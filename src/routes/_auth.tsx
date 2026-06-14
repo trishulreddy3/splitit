@@ -1,7 +1,9 @@
 import { createFileRoute, Outlet, Navigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ArrowUpRight, Receipt, Users, Wallet } from "lucide-react";
+import { Receipt, Users, Wallet } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { reviewService } from "@/lib/api/services";
 
 export const Route = createFileRoute("/_auth")({
   ssr: false,
@@ -10,6 +12,13 @@ export const Route = createFileRoute("/_auth")({
 
 function AuthLayout() {
   const { isAuthenticated, loading } = useAuth();
+  
+  const { data: randomReview } = useQuery({
+    queryKey: ["random-review"],
+    queryFn: () => reviewService.getRandom(),
+    staleTime: Infinity
+  });
+
   if (!loading && isAuthenticated) return <Navigate to="/dashboard" />;
   return (
     <div className="grid min-h-screen w-full grid-cols-1 lg:grid-cols-2">
@@ -58,15 +67,19 @@ function AuthLayout() {
             ))}
           </div>
 
-          <div className="mt-auto space-y-3 border-t border-border pt-6">
-            <p className="text-sm text-foreground">
-              "We used to spend an hour after every trip arguing about totals. Now it's 30 seconds."
-            </p>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <div className="h-6 w-6 rounded-full bg-muted" />
-              <span>Aisha Patel · Travel Lead, Wanderloop</span>
+          {randomReview && (
+            <div className="mt-auto space-y-3 border-t border-border pt-6">
+              <p className="text-sm text-foreground">
+                "{randomReview.text}"
+              </p>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <div className="h-6 w-6 overflow-hidden rounded-full bg-muted">
+                  {randomReview.authorAvatar && <img src={randomReview.authorAvatar} alt="" className="h-full w-full object-cover" />}
+                </div>
+                <span>{randomReview.authorName} {randomReview.role ? `· ${randomReview.role}` : ""}</span>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </aside>
 
@@ -76,9 +89,6 @@ function AuthLayout() {
             <div className="h-2.5 w-2.5 rounded-sm bg-foreground" />
           </div>
           SplitTrip
-        </a>
-        <a href="https://lovable.dev" className="absolute right-6 top-6 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
-          Docs <ArrowUpRight className="h-3 w-3" />
         </a>
         <div className="w-full max-w-sm">
           <Outlet />

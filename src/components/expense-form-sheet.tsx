@@ -35,10 +35,16 @@ const baseSchema = z.object({
   amount: z.coerce.number().positive("Must be greater than 0"),
   currency: z.string().min(1).max(8),
   category: z.string(),
-  paidBy: z.string().min(1, "Select who paid"),
   expenseDate: z.string().min(1),
   splitMethod: z.enum(["equal", "unequal", "percentage", "shares"]),
   groupId: z.string().optional(),
+  payerMode: z.enum(["single", "multiple"]),
+  paidBy: z.string().optional(),
+  contributors: z.array(z.object({
+    userId: z.string(),
+    selected: z.boolean(),
+    amount: z.coerce.number().min(0).optional(),
+  })),
   splits: z.array(z.object({
     userId: z.string(),
     selected: z.boolean(),
@@ -68,13 +74,16 @@ export function ExpenseFormSheet({ open, onOpenChange, group, currentUser, membe
       resolver: zodResolver(baseSchema),
       defaultValues: {
         name: "", description: "", amount: 0, currency: "INR",
-        category: "miscellaneous", paidBy: currentUser._id, expenseDate: today,
+        category: "miscellaneous", expenseDate: today,
         splitMethod: "equal", groupId: group?._id,
+        payerMode: "single", paidBy: currentUser._id,
+        contributors: members.map((m) => ({ userId: m._id, selected: m._id === currentUser._id, amount: 0 })),
         splits: members.map((m) => ({ userId: m._id, selected: true, amount: 0, percentage: 0, shares: 1 })),
       },
     });
 
   const { fields } = useFieldArray({ control, name: "splits" });
+  const { fields: contributorFields } = useFieldArray({ control, name: "contributors" });
   const amount = Number(watch("amount") || 0);
   const method = watch("splitMethod") as SplitMethod;
   const splits = watch("splits") || [];
@@ -103,25 +112,36 @@ export function ExpenseFormSheet({ open, onOpenChange, group, currentUser, membe
 
   const create = useMutation({
     mutationFn: async (v: FormValues) => {
-      const payload = {
-        name: v.name,
-        description: v.description,
-        amount: v.amount,
-        currency: v.currency,
-        category: v.category as ExpenseCategory,
-        paidBy: v.paidBy as any,
-        expenseDate: v.expenseDate,
-        splitMethod: v.splitMethod,
+      const data = {
+        ...v,
         group: v.groupId,
-        participants: selectedIds as any,
-        splits: selectedIds.map((id) => ({
-          user: id,
-          amount: Math.round((computed.get(id) || 0) * 100) / 100,
-          percentage: method === "percentage" ? Number(splits.find((s) => s.userId === id)?.percentage || 0) : undefined,
-          shares: method === "shares" ? Number(splits.find((s) => s.userId === id)?.shares || 0) : undefined,
-        })),
+        participants: v.splits.filter((s) => s.selected).map((s) => s.userId),
+        contributors: v.payerMode === "single" 
+          ? [{ user: v.paidBy!, amount: Number(v.amount) }]
+          : v.contributors.filter(c => c.selected && Number(c.amount) > 0).map(c => ({ user: c.userId, amount: Number(c.amount) })),
+        splits: v.splits
+          .filter((s) => s.selected)
+          .map((s) => ({
+            user: s.userId,
+            amount: method === "equal" ? Number(computed.get(s.userId)?.toFixed(2)) : Number(s.amount || 0),
+            percentage: method === "percentage" ? Number(s.percentage || 0) : undefined,
+            shares: method === "shares" ? Number(s.shares || 0) : undefined,
+          })),
       };
-      return expenseService.create(payload as any);
+  
+      if (data.contributors.length === 0) {
+        toast.error("Please specify who paid.");
+        return;
+      }
+  
+      if (v.payerMode === "multiple") {
+        const totalContributed = data.contributors.reduce((acc, c) => acc + c.amount, 0);
+        if (Math.abs(totalContributed - Number(v.amount)) > 0.01) {
+          toast.error(`Contributors total (${formatCurrency(totalContributed, v.currency)}) does not match expense amount (${formatCurrency(Number(v.amount), v.currency)}).`);
+          return;
+        }
+      }
+      return expenseService.create(data as any);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["expenses"] });
@@ -215,15 +235,51 @@ export function ExpenseFormSheet({ open, onOpenChange, group, currentUser, membe
                 </Select>
               </div>
             )}
-            <div className="space-y-2">
-              <Label>Paid by</Label>
-              <Select defaultValue={currentUser._id} onValueChange={(v) => setValue("paidBy", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {members.map((m) => <SelectItem key={m._id} value={m._id}>{m.fullName}</SelectItem>)}
-                </SelectContent>
-              </Select>
-              {errors.paidBy && <p className="text-xs text-destructive">{errors.paidBy.message}</p>}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label>Paid by</Label>
+                <Tabs value={watch("payerMode")} onValueChange={(v) => setValue("payerMode", v as "single" | "multiple")} className="h-8 w-[160px]">
+                  <TabsList className="grid h-full w-full grid-cols-2">
+                    <TabsTrigger value="single" className="text-[11px]">Single</TabsTrigger>
+                    <TabsTrigger value="multiple" className="text-[11px]">Multiple</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+              
+              {watch("payerMode") === "single" ? (
+                <div>
+                  <Select defaultValue={currentUser._id} onValueChange={(v) => setValue("paidBy", v)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {members.map((m) => <SelectItem key={m._id} value={m._id}>{m.fullName}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  {errors.paidBy && <p className="mt-1.5 text-xs text-destructive">{errors.paidBy.message}</p>}
+                </div>
+              ) : (
+                <div className="divide-y divide-border rounded-lg border border-border bg-card max-h-48 overflow-y-auto">
+                  {contributorFields.map((f, idx) => {
+                    const m = memberLookup.get(watch(`contributors.${idx}.userId`));
+                    if (!m) return null;
+                    return (
+                      <div key={f.id} className="flex items-center gap-3 p-2.5">
+                        <Checkbox
+                          checked={watch(`contributors.${idx}.selected`)}
+                          onCheckedChange={(c) => setValue(`contributors.${idx}.selected`, Boolean(c))}
+                        />
+                        <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-muted text-[10px] font-medium uppercase">
+                          {m.fullName?.[0]}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="truncate text-sm">{m.fullName}</div>
+                        </div>
+                        <Input className="h-8 w-24 text-sm" type="number" step="0.01" placeholder="0"
+                          disabled={!watch(`contributors.${idx}.selected`)} {...register(`contributors.${idx}.amount`)} />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="description">Notes</Label>

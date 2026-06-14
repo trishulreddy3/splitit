@@ -9,6 +9,7 @@ export interface IGroup extends Document {
   endDate?: Date;
   owner: Types.ObjectId;
   members: Types.ObjectId[];
+  membersCanInvite: boolean;
   totalExpenses: number;
   createdAt: Date;
   updatedAt: Date;
@@ -24,6 +25,7 @@ const GroupSchema: Schema = new Schema(
     endDate: { type: Date },
     owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
     members: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    membersCanInvite: { type: Boolean, default: false },
     totalExpenses: { type: Number, default: 0 },
   },
   { timestamps: true }

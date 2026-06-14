@@ -22,6 +22,15 @@ export interface FriendRequest {
   createdAt: string;
 }
 
+export interface GroupInvite {
+  _id: string;
+  from: User;
+  to: User;
+  group: Group;
+  status: "pending" | "accepted" | "rejected";
+  createdAt: string;
+}
+
 export interface Group {
   _id: string;
   name: string;
@@ -32,6 +41,7 @@ export interface Group {
   endDate?: string;
   owner: User;
   members: User[];
+  membersCanInvite: boolean;
   totalExpenses?: number;
   createdAt: string;
 }
@@ -55,7 +65,7 @@ export interface Expense {
   amount: number;
   currency: string;
   category: ExpenseCategory;
-  paidBy: User;
+  contributors: { user: string | User; amount: number }[];
   group?: Group | string;
   participants: User[];
   splits: ExpenseSplit[];
