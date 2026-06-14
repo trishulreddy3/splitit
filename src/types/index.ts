@@ -18,7 +18,7 @@ export interface FriendRequest {
   _id: string;
   from: User;
   to: User;
-  status: "pendingg" | "accepted" | "rejected";
+  status: "pending" | "accepted" | "rejected";
   createdAt: string;
 }
 
