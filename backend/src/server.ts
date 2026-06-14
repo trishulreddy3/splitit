@@ -15,7 +15,7 @@ const startServer = async () => {
 
     startCronJobs();
 
-    app.listen(PORT, () => {
+    app.listen(PORT as number, "0.0.0.0", () => {
       console.log(`Server running on port ${PORT}`);
     });
   } catch (error) {
