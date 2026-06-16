@@ -1,16 +1,16 @@
 import { o as __toESM } from "./_runtime.mjs";
-import { a as friendService } from "./_ssr/services-CA8HLDPr.mjs";
+import { a as friendService } from "./_ssr/services-hSe0tyCa.mjs";
 import { u as require_react } from "./_libs/@floating-ui/react-dom+[...].mjs";
 import { c as require_jsx_runtime } from "./_libs/@radix-ui/react-arrow+[...].mjs";
 import { i as useQueryClient, n as useQuery, t as useMutation } from "./_libs/tanstack__react-query.mjs";
-import { O as Check, a as UserPlus, f as Plus, g as LoaderCircle, t as X } from "./_libs/lucide-react.mjs";
+import { a as UserPlus, f as Plus, g as LoaderCircle, k as Check, t as X } from "./_libs/lucide-react.mjs";
 import { i as PageHeader, o as Skeleton, r as PageContainer, t as EmptyState } from "./_ssr/primitives-BeN511sB.mjs";
 import { t as Button } from "./_ssr/button-Bq5vK6RO.mjs";
 import { t as Input } from "./_ssr/input-B8Q2ztVi.mjs";
 import { i as TabsTrigger, n as TabsContent, r as TabsList, t as Tabs } from "./_ssr/tabs-CCJRliUM.mjs";
 import { n as toast } from "./_libs/sonner.mjs";
-import { a as DialogHeader, i as DialogFooter, n as DialogContent, o as DialogTitle, r as DialogDescription, s as DialogTrigger, t as Dialog } from "./_ssr/dialog-DIo89e4g.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/_app.friends-Dbs1dooN.js
+import { a as DialogHeader, c as UserSearchCombobox, i as DialogFooter, n as DialogContent, o as DialogTitle, r as DialogDescription, s as DialogTrigger, t as Dialog } from "./_ssr/user-search-combobox-DXEwMkeh.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/_app.friends-C_apCIPB.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 function FriendsPage() {
@@ -71,11 +71,10 @@ function FriendsPage() {
 				})
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Send friend request" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: "We'll notify them by email." })] }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(UserSearchCombobox, {
 					value: email,
-					onChange: (e) => setEmail(e.target.value),
-					placeholder: "friend@example.com",
-					type: "email"
+					onChange: setEmail,
+					placeholder: "Search to add friend..."
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 					onClick: () => sendReq.mutate(),

@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
   ArrowLeft, Calendar, Loader2, MapPin, Plus, Receipt, Trash2, UserMinus, Users, Check, X
 } from "lucide-react";
+import { UserSearchCombobox } from "@/components/user-search-combobox";
 import { toast } from "sonner";
 import { expenseService, groupService, settlementService } from "@/lib/api/services";
 import { PageContainer, PageHeader, EmptyState, Skeleton, KpiCard, SectionTitle, StatusBadge } from "@/components/primitives";
@@ -201,7 +202,11 @@ function GroupDetailPage() {
                       <DialogTrigger asChild><Button size="sm" variant="outline"><Plus className="mr-1.5 h-3.5 w-3.5" />Invite</Button></DialogTrigger>
                       <DialogContent>
                         <DialogHeader><DialogTitle>Invite by email</DialogTitle><DialogDescription>They'll receive a link to join this group.</DialogDescription></DialogHeader>
-                        <Input value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="friend@example.com" />
+                        <UserSearchCombobox
+                          value={inviteEmail}
+                          onChange={setInviteEmail}
+                          placeholder="Search user to invite..."
+                        />
                         <DialogFooter>
                           <Button onClick={() => invite.mutate()} disabled={!inviteEmail || invite.isPending}>
                             {invite.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Send invite

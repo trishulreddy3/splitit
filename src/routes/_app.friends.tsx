@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Check, Loader2, Plus, UserPlus, X } from "lucide-react";
+import { UserSearchCombobox } from "@/components/user-search-combobox";
 import { toast } from "sonner";
 import { friendService } from "@/lib/api/services";
 import { PageContainer, PageHeader, EmptyState, Skeleton } from "@/components/primitives";
@@ -59,7 +60,11 @@ function FriendsPage() {
             <DialogTrigger asChild><Button size="sm"><Plus className="mr-1.5 h-3.5 w-3.5" />Add friend</Button></DialogTrigger>
             <DialogContent>
               <DialogHeader><DialogTitle>Send friend request</DialogTitle><DialogDescription>We'll notify them by email.</DialogDescription></DialogHeader>
-              <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="friend@example.com" type="email" />
+              <UserSearchCombobox 
+                value={email}
+                onChange={setEmail}
+                placeholder="Search to add friend..."
+              />
               <DialogFooter>
                 <Button onClick={() => sendReq.mutate()} disabled={!email || sendReq.isPending}>
                   {sendReq.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Send request

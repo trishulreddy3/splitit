@@ -1,14 +1,14 @@
-import { r as dashboardService } from "./_ssr/services-CA8HLDPr.mjs";
+import { r as dashboardService } from "./_ssr/services-hSe0tyCa.mjs";
 import { c as require_jsx_runtime } from "./_libs/@radix-ui/react-arrow+[...].mjs";
 import { n as useQuery } from "./_libs/tanstack__react-query.mjs";
-import { n as useAuth } from "./_ssr/auth-context-CPXWFpar.mjs";
+import { n as useAuth } from "./_ssr/auth-context-C_KaABU9.mjs";
 import { g as Link } from "./_libs/@tanstack/react-router+[...].mjs";
-import { A as CalendarClock, F as ArrowDownRight, M as ArrowUpRight, d as Receipt, f as Plus, n as Wallet, r as Users, s as TrendingUp } from "./_libs/lucide-react.mjs";
+import { I as ArrowDownRight, N as ArrowUpRight, d as Receipt, f as Plus, j as CalendarClock, n as Wallet, r as Users, s as TrendingUp } from "./_libs/lucide-react.mjs";
 import { t as motion } from "./_libs/framer-motion.mjs";
 import { a as SectionTitle, i as PageHeader, n as KpiCard, o as Skeleton, r as PageContainer, t as EmptyState } from "./_ssr/primitives-BeN511sB.mjs";
 import { t as formatCurrency } from "./_ssr/settle-C_8B-gc8.mjs";
 import { t as Button } from "./_ssr/button-Bq5vK6RO.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/_app.dashboard-C8IwuuEX.js
+//#region node_modules/.nitro/vite/services/ssr/assets/_app.dashboard-2G6n3ErL.js
 var import_jsx_runtime = require_jsx_runtime();
 function DashboardPage() {
 	const { user } = useAuth();

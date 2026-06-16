@@ -1,5 +1,5 @@
 import { t as axios } from "../_libs/axios+[...].mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/services-CA8HLDPr.js
+//#region node_modules/.nitro/vite/services/ssr/assets/services-hSe0tyCa.js
 var TOKEN_KEY = "splittrip_token";
 var getToken = () => typeof window === "undefined" ? null : localStorage.getItem(TOKEN_KEY);
 var setToken = (token) => {
@@ -112,5 +112,6 @@ var reviewService = {
 	create: (payload) => unwrap(api.post("/reviews", payload)),
 	getRandom: () => unwrap(api.get("/reviews/random"))
 };
+var userService = { search: (q) => unwrap(api.get("/users/search", { params: { q } })) };
 //#endregion
-export { friendService as a, notificationService as c, reviewService as d, setToken as f, expenseService as i, profileService as l, settlementService as m, authService as n, getToken as o, settingsService as p, dashboardService as r, groupService as s, activityService as t, reportService as u };
+export { friendService as a, notificationService as c, reviewService as d, setToken as f, userService as h, expenseService as i, profileService as l, settlementService as m, authService as n, getToken as o, settingsService as p, dashboardService as r, groupService as s, activityService as t, reportService as u };

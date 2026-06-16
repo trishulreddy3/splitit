@@ -1,9 +1,9 @@
-import { t as activityService } from "./_ssr/services-CA8HLDPr.mjs";
+import { t as activityService } from "./_ssr/services-hSe0tyCa.mjs";
 import { c as require_jsx_runtime } from "./_libs/@radix-ui/react-arrow+[...].mjs";
 import { n as useQuery } from "./_libs/tanstack__react-query.mjs";
-import { I as Activity } from "./_libs/lucide-react.mjs";
+import { L as Activity } from "./_libs/lucide-react.mjs";
 import { i as PageHeader, o as Skeleton, r as PageContainer, t as EmptyState } from "./_ssr/primitives-BeN511sB.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/_app.activity-BlnPwTiS.js
+//#region node_modules/.nitro/vite/services/ssr/assets/_app.activity-CWUjb-Ua.js
 var import_jsx_runtime = require_jsx_runtime();
 function ActivityPage() {
 	const activity = useQuery({

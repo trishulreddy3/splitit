@@ -143,3 +143,8 @@ export const reviewService = {
       api.get("/reviews/random")
     ),
 };
+
+// Users
+export const userService = {
+  search: (q: string) => unwrap<{ _id: string; fullName: string; email: string; avatarUrl?: string }[]>(api.get("/users/search", { params: { q } })),
+};

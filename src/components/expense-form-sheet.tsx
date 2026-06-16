@@ -123,7 +123,7 @@ export function ExpenseFormSheet({ open, onOpenChange, group, currentUser, membe
           .filter((s) => s.selected)
           .map((s) => ({
             user: s.userId,
-            amount: method === "equal" ? Number(computed.get(s.userId)?.toFixed(2)) : Number(s.amount || 0),
+            amount: method === "unequal" ? Number(s.amount || 0) : Number(computed.get(s.userId)?.toFixed(2)) || 0,
             percentage: method === "percentage" ? Number(s.percentage || 0) : undefined,
             shares: method === "shares" ? Number(s.shares || 0) : undefined,
           })),
@@ -161,6 +161,8 @@ export function ExpenseFormSheet({ open, onOpenChange, group, currentUser, membe
       name: "", description: "", amount: 0, currency: "INR",
       category: "miscellaneous", paidBy: currentUser._id, expenseDate: today,
       splitMethod: "equal", groupId: group?._id,
+      payerMode: "single",
+      contributors: members.map((m) => ({ userId: m._id, selected: m._id === currentUser._id, amount: 0 })),
       splits: members.map((m) => ({ userId: m._id, selected: true, amount: 0, percentage: 0, shares: 1 })),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,10 +1,10 @@
 import { o as __toESM } from "../_runtime.mjs";
-import { i as expenseService } from "./services-CA8HLDPr.mjs";
+import { i as expenseService } from "./services-hSe0tyCa.mjs";
 import { u as require_react } from "../_libs/@floating-ui/react-dom+[...].mjs";
 import { c as require_jsx_runtime } from "../_libs/@radix-ui/react-arrow+[...].mjs";
 import { i as useQueryClient, t as useMutation } from "../_libs/tanstack__react-query.mjs";
 import { t as cn } from "./utils-C_uf36nf.mjs";
-import { O as Check, d as Receipt, g as LoaderCircle } from "../_libs/lucide-react.mjs";
+import { d as Receipt, g as LoaderCircle, k as Check } from "../_libs/lucide-react.mjs";
 import { n as CheckboxIndicator, t as Checkbox$1 } from "../_libs/@radix-ui/react-checkbox+[...].mjs";
 import { t as formatCurrency } from "./settle-C_8B-gc8.mjs";
 import { t as Button } from "./button-Bq5vK6RO.mjs";
@@ -17,7 +17,7 @@ import { i as TabsTrigger, r as TabsList, t as Tabs } from "./tabs-CCJRliUM.mjs"
 import { n as toast } from "../_libs/sonner.mjs";
 import { a as objectType, i as enumType, n as booleanType, o as stringType, r as coerce, t as arrayType } from "../_libs/zod.mjs";
 import { n as useFieldArray, r as useForm, t as u } from "../_libs/@hookform/resolvers+[...].mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/expense-form-sheet-DkF0D8Xk.js
+//#region node_modules/.nitro/vite/services/ssr/assets/expense-form-sheet-6Wnw847I.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var Checkbox = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox$1, {
@@ -180,7 +180,7 @@ function ExpenseFormSheet({ open, onOpenChange, group, currentUser, members, gro
 				})),
 				splits: v.splits.filter((s) => s.selected).map((s) => ({
 					user: s.userId,
-					amount: method === "equal" ? Number(computed.get(s.userId)?.toFixed(2)) : Number(s.amount || 0),
+					amount: method === "unequal" ? Number(s.amount || 0) : Number(computed.get(s.userId)?.toFixed(2)) || 0,
 					percentage: method === "percentage" ? Number(s.percentage || 0) : void 0,
 					shares: method === "shares" ? Number(s.shares || 0) : void 0
 				}))
@@ -221,6 +221,12 @@ function ExpenseFormSheet({ open, onOpenChange, group, currentUser, members, gro
 			expenseDate: today,
 			splitMethod: "equal",
 			groupId: group?._id,
+			payerMode: "single",
+			contributors: members.map((m) => ({
+				userId: m._id,
+				selected: m._id === currentUser._id,
+				amount: 0
+			})),
 			splits: members.map((m) => ({
 				userId: m._id,
 				selected: true,

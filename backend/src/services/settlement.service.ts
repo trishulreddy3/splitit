@@ -53,6 +53,11 @@ export const calculateGroupSettlements = async (groupId: string) => {
   debtors.sort((a, b) => a.balance - b.balance);
   creditors.sort((a, b) => b.balance - a.balance);
 
+  // Fetch users to populate "from" and "to" objects
+  const userIds = [...debtors.map(d => d.userId), ...creditors.map(c => c.userId)];
+  const users = await mongoose.model("User").find({ _id: { $in: userIds } }).select("fullName email avatarUrl");
+  const userMap = new Map(users.map(u => [u._id.toString(), u]));
+
   const suggestedSettlements = [];
 
   let i = 0; // debtors index
@@ -69,9 +74,12 @@ export const calculateGroupSettlements = async (groupId: string) => {
 
     if (roundedAmount > 0) {
       suggestedSettlements.push({
-        from: debtor.userId,
-        to: creditor.userId,
+        _id: `suggested_${groupId}_${debtor.userId}_${creditor.userId}_${roundedAmount}`,
+        from: userMap.get(debtor.userId) || { _id: debtor.userId, fullName: "Unknown User" },
+        to: userMap.get(creditor.userId) || { _id: creditor.userId, fullName: "Unknown User" },
         amount: roundedAmount,
+        currency: "INR",
+        status: "pending",
       });
     }
 

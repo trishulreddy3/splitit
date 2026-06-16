@@ -1,10 +1,10 @@
 import { o as __toESM } from "./_runtime.mjs";
-import { s as groupService } from "./_ssr/services-CA8HLDPr.mjs";
+import { s as groupService } from "./_ssr/services-hSe0tyCa.mjs";
 import { u as require_react } from "./_libs/@floating-ui/react-dom+[...].mjs";
 import { c as require_jsx_runtime } from "./_libs/@radix-ui/react-arrow+[...].mjs";
 import { i as useQueryClient, n as useQuery, t as useMutation } from "./_libs/tanstack__react-query.mjs";
 import { g as Link } from "./_libs/@tanstack/react-router+[...].mjs";
-import { N as ArrowRight, O as Check, f as Plus, g as LoaderCircle, k as Calendar, m as MapPin, r as Users, t as X } from "./_libs/lucide-react.mjs";
+import { A as Calendar, P as ArrowRight, f as Plus, g as LoaderCircle, k as Check, m as MapPin, r as Users, t as X } from "./_libs/lucide-react.mjs";
 import { i as PageHeader, o as Skeleton, r as PageContainer, t as EmptyState } from "./_ssr/primitives-BeN511sB.mjs";
 import { t as Button } from "./_ssr/button-Bq5vK6RO.mjs";
 import { t as Input } from "./_ssr/input-B8Q2ztVi.mjs";
@@ -15,8 +15,8 @@ import { i as TabsTrigger, n as TabsContent, r as TabsList, t as Tabs } from "./
 import { n as toast } from "./_libs/sonner.mjs";
 import { a as objectType, o as stringType } from "./_libs/zod.mjs";
 import { r as useForm, t as u } from "./_libs/@hookform/resolvers+[...].mjs";
-import { t as Route } from "./_app.groups.index-BxqOcE3A.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/_app.groups.index-XtfIz1Bv.js
+import { t as Route } from "./_app.groups.index-Dq9cHwsT.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/_app.groups.index-CUOPRGNU.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var schema = objectType({

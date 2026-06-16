@@ -1,23 +1,22 @@
 import { o as __toESM } from "./_runtime.mjs";
-import { i as expenseService, m as settlementService, s as groupService } from "./_ssr/services-CA8HLDPr.mjs";
+import { i as expenseService, m as settlementService, s as groupService } from "./_ssr/services-hSe0tyCa.mjs";
 import { u as require_react } from "./_libs/@floating-ui/react-dom+[...].mjs";
 import { c as require_jsx_runtime } from "./_libs/@radix-ui/react-arrow+[...].mjs";
 import { i as useQueryClient, n as useQuery, t as useMutation } from "./_libs/tanstack__react-query.mjs";
-import { n as useAuth } from "./_ssr/auth-context-CPXWFpar.mjs";
+import { n as useAuth } from "./_ssr/auth-context-C_KaABU9.mjs";
 import { g as Link } from "./_libs/@tanstack/react-router+[...].mjs";
-import { P as ArrowLeft, c as Trash2, d as Receipt, f as Plus, g as LoaderCircle, k as Calendar, m as MapPin, o as UserMinus, r as Users, t as X } from "./_libs/lucide-react.mjs";
+import { A as Calendar, F as ArrowLeft, c as Trash2, d as Receipt, f as Plus, g as LoaderCircle, m as MapPin, o as UserMinus, r as Users, t as X } from "./_libs/lucide-react.mjs";
 import { i as PageHeader, n as KpiCard, o as Skeleton, r as PageContainer, s as StatusBadge, t as EmptyState } from "./_ssr/primitives-BeN511sB.mjs";
 import { t as formatCurrency } from "./_ssr/settle-C_8B-gc8.mjs";
 import { t as Button } from "./_ssr/button-Bq5vK6RO.mjs";
-import { t as Input } from "./_ssr/input-B8Q2ztVi.mjs";
 import { t as Label } from "./_ssr/label-DBD1bRRP.mjs";
 import { i as TabsTrigger, n as TabsContent, r as TabsList, t as Tabs } from "./_ssr/tabs-CCJRliUM.mjs";
 import { n as toast } from "./_libs/sonner.mjs";
-import { t as ExpenseFormSheet } from "./_ssr/expense-form-sheet-DkF0D8Xk.mjs";
-import { a as DialogHeader, i as DialogFooter, n as DialogContent, o as DialogTitle, r as DialogDescription, s as DialogTrigger, t as Dialog } from "./_ssr/dialog-DIo89e4g.mjs";
-import { t as Route } from "./_app.groups._groupId-TMoyrsqc.mjs";
+import { t as ExpenseFormSheet } from "./_ssr/expense-form-sheet-6Wnw847I.mjs";
+import { a as DialogHeader, c as UserSearchCombobox, i as DialogFooter, n as DialogContent, o as DialogTitle, r as DialogDescription, s as DialogTrigger, t as Dialog } from "./_ssr/user-search-combobox-DXEwMkeh.mjs";
+import { t as Route } from "./_app.groups._groupId-ZVdl-RHS.mjs";
 import { t as Switch } from "./_ssr/switch-Cn1w-cIH.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/_app.groups._groupId-CJLttGf8.js
+//#region node_modules/.nitro/vite/services/ssr/assets/_app.groups._groupId-Ixbd--_G.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 function GroupDetailPage() {
@@ -337,10 +336,10 @@ function GroupDetailPage() {
 													})
 												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
 													/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Invite by email" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: "They'll receive a link to join this group." })] }),
-													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(UserSearchCombobox, {
 														value: inviteEmail,
-														onChange: (e) => setInviteEmail(e.target.value),
-														placeholder: "friend@example.com"
+														onChange: setInviteEmail,
+														placeholder: "Search user to invite..."
 													}),
 													/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 														onClick: () => invite.mutate(),

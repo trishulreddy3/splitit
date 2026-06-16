@@ -26,9 +26,40 @@ export const markPaid = async (req: AuthRequest, res: Response): Promise<void> =
   const { id } = req.body;
   const userId = req.user!._id;
 
+  if (id.startsWith("suggested_")) {
+    const parts = id.split("_");
+    if (parts.length >= 5) {
+      const [_, groupId, fromId, toId, amount] = parts;
+      
+      if (fromId !== userId.toString() && toId !== userId.toString()) {
+        res.status(403).json({ success: false, message: "Not authorized" });
+        return;
+      }
+
+      const newSettlement = await Settlement.create({
+        group: groupId,
+        from: fromId,
+        to: toId,
+        amount: parseFloat(amount),
+        currency: "INR",
+        status: "paid",
+        date: new Date()
+      });
+
+      await Activity.create({
+        type: "settlement_completed",
+        actor: userId,
+        group: groupId,
+        message: `Completed settlement for ${amount} INR`
+      });
+
+      res.json({ success: true, data: newSettlement });
+      return;
+    }
+  }
+
   const settlement = await Settlement.findById(id);
   if (!settlement) {
-    // If it's a dynamic settlement that hasn't been saved yet, we'd normally create it here, but let's assume `id` might be a new structure.
     res.status(404).json({ success: false, message: "Settlement not found" });
     return;
   }

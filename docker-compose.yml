@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: splitit_backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Pass the backend URL to Vite at build-time (using host machine's localhost for the browser)
+        - VITE_API_URL=http://localhost:5000/api
+    container_name: splitit_frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./.env
+    # environment:
+      # If your frontend does Server-Side Rendering (SSR) and fetches data from the backend, 
+      # it might need to connect to 'http://backend:5000/api' internally instead of localhost.
+      # You can override VITE_API_URL here specifically for the container if needed:
+      # - VITE_API_URL=http://backend:5000/api
+    depends_on:
+      - backend
+    restart: unless-stopped

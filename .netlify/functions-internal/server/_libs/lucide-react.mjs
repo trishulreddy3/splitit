@@ -305,6 +305,19 @@ var ChevronsLeft = createLucideIcon("chevrons-left", [["path", {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
+var ChevronsUpDown = createLucideIcon("chevrons-up-down", [["path", {
+	d: "m7 15 5 5 5-5",
+	key: "1hf1tw"
+}], ["path", {
+	d: "m7 9 5-5 5 5",
+	key: "sgt6xg"
+}]]);
+/**
+* @license lucide-react v0.575.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
 var CircleCheck = createLucideIcon("circle-check", [["circle", {
 	cx: "12",
 	cy: "12",
@@ -719,4 +732,4 @@ var X = createLucideIcon("x", [["path", {
 	key: "d8bk6v"
 }]]);
 //#endregion
-export { CalendarClock as A, CircleCheck as C, ChevronDown as D, ChevronRight as E, ArrowDownRight as F, Activity as I, ArrowUpRight as M, ArrowRight as N, Check as O, ArrowLeft as P, Circle as S, ChevronUp as T, LayoutDashboard as _, UserPlus as a, EyeOff as b, Trash2 as c, Receipt as d, Plus as f, LoaderCircle as g, LogOut as h, User as i, Bell as j, Calendar as k, Settings as l, MapPin as m, Wallet as n, UserMinus as o, Menu as p, Users as r, TrendingUp as s, X as t, Search as u, Funnel as v, ChevronsLeft as w, Command as x, Eye as y };
+export { Calendar as A, CircleCheck as C, ChevronRight as D, ChevronUp as E, ArrowLeft as F, ArrowDownRight as I, Activity as L, Bell as M, ArrowUpRight as N, ChevronDown as O, ArrowRight as P, Circle as S, ChevronsLeft as T, LayoutDashboard as _, UserPlus as a, EyeOff as b, Trash2 as c, Receipt as d, Plus as f, LoaderCircle as g, LogOut as h, User as i, CalendarClock as j, Check as k, Settings as l, MapPin as m, Wallet as n, UserMinus as o, Menu as p, Users as r, TrendingUp as s, X as t, Search as u, Funnel as v, ChevronsUpDown as w, Command as x, Eye as y };

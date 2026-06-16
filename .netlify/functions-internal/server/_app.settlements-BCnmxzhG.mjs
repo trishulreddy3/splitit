@@ -1,4 +1,4 @@
-import { m as settlementService } from "./_ssr/services-CA8HLDPr.mjs";
+import { m as settlementService } from "./_ssr/services-hSe0tyCa.mjs";
 import { c as require_jsx_runtime } from "./_libs/@radix-ui/react-arrow+[...].mjs";
 import { i as useQueryClient, n as useQuery, t as useMutation } from "./_libs/tanstack__react-query.mjs";
 import { C as CircleCheck, g as LoaderCircle, n as Wallet } from "./_libs/lucide-react.mjs";
@@ -6,7 +6,7 @@ import { i as PageHeader, o as Skeleton, r as PageContainer, s as StatusBadge, t
 import { t as formatCurrency } from "./_ssr/settle-C_8B-gc8.mjs";
 import { t as Button } from "./_ssr/button-Bq5vK6RO.mjs";
 import { n as toast } from "./_libs/sonner.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/_app.settlements-DTABsVLx.js
+//#region node_modules/.nitro/vite/services/ssr/assets/_app.settlements-BCnmxzhG.js
 var import_jsx_runtime = require_jsx_runtime();
 function SettlementsPage() {
 	const qc = useQueryClient();

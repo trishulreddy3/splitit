@@ -1,7 +1,7 @@
 import { m as createFileRoute, p as lazyRouteComponent } from "./_libs/@tanstack/react-router+[...].mjs";
 import { a as objectType, o as stringType } from "./_libs/zod.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/_app.groups.index-BxqOcE3A.js
-var $$splitComponentImporter = () => import("./_app.groups.index-XtfIz1Bv.mjs");
+//#region node_modules/.nitro/vite/services/ssr/assets/_app.groups.index-Dq9cHwsT.js
+var $$splitComponentImporter = () => import("./_app.groups.index-CUOPRGNU.mjs");
 var Route = createFileRoute("/_app/groups/")({
 	validateSearch: (search) => ({ new: search.new === "true" || search.new === true }),
 	ssr: false,
